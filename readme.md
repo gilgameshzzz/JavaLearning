@@ -3,7 +3,7 @@
 二、JMM(java内存模型java Memory Model) **特性：可见性，原子性，有序性**
 *在变量前加上volatile，一个线程对这个变量进行修改，就及时通知其他线程，主物理内存的变量值已经被修改，其他线程的变量值就修改了*
 
-![JMM模型](/java/java线程.png)
+![JMM模型](java/java线程.png)
 
 本身是一种抽象的概念**并不真实存在**，它描述的是一组规则或规范，通过这组规范定义了程序中各个变量（包括实例字段，静态字段和构成数组对象的元素）的访问方式。
 ### JMM关于同步的规定：
@@ -49,9 +49,9 @@ CAS并发原语体现在Java中的sun.misc.Unsafe类中的各个方法。调用U
 2、变量valueOffset，表示该变量值在内存中的偏移地址，因为Unsafe就是根据**内存偏移地址获取数据**的。<br>
 3、变量value用volatile修饰，保证了多线程之间的内存可见性
 
-![](.\java\1.png)
-![](.\java\2.png)
-![](.\java\3.png)
+![](java/1.png)
+![](java/2.png)
+![](java/3.png)
 
 
 ### CAS缺点：
@@ -145,7 +145,7 @@ CountDownLatch主要有两个方法，当一个或多个线程调用await方法�
 
 **阻塞队列**：
 顾名思义，首先它是一个队列，一个阻塞队列在数据结构作用如下图：
-![](.\java\BlockingQueue.png)
+![](java/BlockingQueue.png)
 当阻塞队列是空时，从队列获取元素的操作将会被阻塞(试图从空的阻塞队列中获取元素的线程将会被阻塞，直到其他的线程往空的队列插入新的元素)；
 
 当阻塞队列是满时，往队列添加元素的操作将会被阻塞(试图往已满的阻塞队列添加新元素的线程同样也会被阻塞，直到其他的线程从队列删除一个或多个元素或者清空队列，使队列变得空闲后新增)。
@@ -163,8 +163,8 @@ LinkedTransferQueue:由链表结构组成的无界阻塞队列；<br>
 LinkedBlockingDeque:由链表结构组成的双向阻塞队列。
 
 BlockingQueue核心方法:
-![](.\java\BlockingQueueMethod.png)
-![](.\java\4.png)
+![](java/BlockingQueueMethod.png)
+![](java/4.png)
 
 ### SynchronousQueue
 SynchronousQueue没有容量，与其他BlockingQueue不同，SynchronousQueue是一个不存储元素的BlockingQueue。每一个put操作必须要等待一个take操作，否则不能继续添加元素，反之亦然。
