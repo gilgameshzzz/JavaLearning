@@ -1,5 +1,5 @@
 // 多线程中，第三种获得多线程的方式
-
+// 多一条注释
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,7 +21,6 @@ public class MyThreadPoolDemo {
 //                } catch (InterruptedException e) {
 //                    e.printStackTrace();
 //                }
-
             }
         } catch (Exception e) {
             e.printStackTrace();
