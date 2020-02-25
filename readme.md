@@ -51,7 +51,7 @@ CAS并发原语体现在Java中的sun.misc.Unsafe类中的各个方法。调用U
 
 ![](java/1.png)
 ![](java/2.png)
-![](/java/3.png)
+![](java/3.png)
 
 
 ### CAS缺点：
@@ -145,7 +145,7 @@ CountDownLatch主要有两个方法，当一个或多个线程调用await方法�
 
 **阻塞队列**：
 顾名思义，首先它是一个队列，一个阻塞队列在数据结构作用如下图：
-![](/java/BlockingQueue.png)
+![](java/BlockingQueue.png)
 当阻塞队列是空时，从队列获取元素的操作将会被阻塞(试图从空的阻塞队列中获取元素的线程将会被阻塞，直到其他的线程往空的队列插入新的元素)；
 
 当阻塞队列是满时，往队列添加元素的操作将会被阻塞(试图往已满的阻塞队列添加新元素的线程同样也会被阻塞，直到其他的线程从队列删除一个或多个元素或者清空队列，使队列变得空闲后新增)。
@@ -204,37 +204,3 @@ java中的线程池是通过Executor框架实现的，该框架中用到了Execu
 Executors.newFixedThreadPool(),自己写开多少个线程,常用于执行长期的任务，性能好很多<br>
 Executors.newSingleThreadExecutor只开启一个线程，常用于一个任务一个任务执行的场景<br>
 Executors.newCachedThreadPool(),系统自己决定开多少线程。常用于执行很多短期异步的小程序或者负载较轻的服务。
-
-### 线程池7个参数
-1、corePoolSize：线程池中的常驻核心线程数；
-<br>2、maximumPoolSize：线程池能够容纳同时执行的最大线程数，此值必须大于等于1；
-<br>3、keepAliveTime：多余的空闲线程存货时间（当前线程池数量超过corePoolSize时，当空闲时间达到keepAliveTime时，多余空闲线程会被销毁直到只剩下corePoolSize个线程为止）；
-<br>4、unit：keepAliveTime的单位；
-<br>5、workQueue：任务队列，被提交但尚未被执行的任务；
-<br>6、threadFactory：表示生成线程池中工作线程的线程工厂，用于创建线程一般用默认的即可；
-<br>7、handler：拒绝策略，表示当队列满了并且工作线程大于等于线程池的最大线程数（maximumPoolSize）时如何来拒绝请求执行的runnable的策略。
-
-
-### 线程池四大基本拒绝策略
-1、AbortPolicy(默认)直接抛出RejectedExecutionException异常阻止系统正常运行；
-<br>2、CallerRunsPolicy"调用者运行"一种调节机制，该策略既不会抛弃任务，也不会抛出异常，而是将某些任务回退到调用者，从而降低新任务的流量；
-<br>3、DiscardOldestPolicy:抛弃队列中等待最久的任务，然后把当前任务加入队列中尝试再次提交当前任务；
-<br>4、DiscardPolicy:直接丢弃任务，不予任何处理也不会抛出异常。（如果任务丢失，这是最好的方案）<br>
-以上内置拒绝策略均实现了RejectedExecutionHandler接口。
-
-### 问题：生产中你用哪一个线程池？
-答案：一个都不用。
-阿里开发手册【强制】线程池不允许使用Executors去创建，而是通过ThreadPoolExecutor的方式，这样的处理方式让开发者更加明确线程池的运行规则，规避资源耗尽的风险。
-**说明**：Executors返回的线程池对象弊端如下：
-1、FixedThreadPool和SingleThreadPool:
-允许的请求队列长度为Integer.MAX_VALUE,可能会堆积大量的请求，从而导致OOM.<br>
-2、CachedThreadPool和ScheduledThreadPool:允许创建线程数量为Integer.MAX_VALUE,可能会堆积大量的请求，从而导致OOM.<br>
-
-### 如何考虑合理分配线程池：
-1、CPU密集型: 该任务需要大量的运算，而没有阻塞，CPU一直全速运行，CPU密集任务只有在真正的多核CPU上才能得到加速（通过多线程），一般公式CPU核数+1个线程的线程池。
-<br>2、IO密集型：①、IO密集型任务线程并不是一直在执行任务，则应配置尽可能多的线程，如CPU核数*2。②、大部分线程都阻塞，故需要配置线程数，参考公式：CPU核数/1-阻塞系数，阻塞系数在0.8~0.9之间。
-
-## 死锁编码及定位
-产生死锁原因：1、系统资源不足，2、进程运行推进的顺序不合适，3、资源分配不当。
-定位：在代码所在的地址，打开终端，输入：jps -l，找到java运行程序的进程编号，然后用jstack 进程编号 命令查看死锁原因。
-
