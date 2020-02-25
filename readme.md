@@ -204,3 +204,30 @@ java中的线程池是通过Executor框架实现的，该框架中用到了Execu
 Executors.newFixedThreadPool(),自己写开多少个线程,常用于执行长期的任务，性能好很多<br>
 Executors.newSingleThreadExecutor只开启一个线程，常用于一个任务一个任务执行的场景<br>
 Executors.newCachedThreadPool(),系统自己决定开多少线程。常用于执行很多短期异步的小程序或者负载较轻的服务。
+
+
+### 微服务
+通常而言，微服务架构是一种架构模式，或者说一种架构风格。它**提倡将单一的应用程序划分成一组小的服务，彻底地去耦合**，每个服务运行在其独立的进程内，服务之间互相协调，互相配置.<br>
+
+**优点：**
+每个服务足够内聚，足够小，易理解，松耦合，能使用不同的语言开发，易于和第三方集成。<br>
+**缺点：**
+开发人员要处理分布式系统的复杂性，多服务运维难度，随着服务的增加，运维压力也在增大，系统部署依赖，服务通信成本。
+#### 微服务技术栈
+|微服务条目|落地技术|
+|:---:|:---:|
+|服务开发|SpringBoot,Spring,SpringMVC|
+|服务配置与管理|NetFlix公司的Archaius,阿里的Diamond|
+|服务注册与发现|Eureka，Consul，Zookeeper|
+|服务调用|Rest，RPC，gRPC|
+|服务熔断器|Hystix,Envoy|
+|负载均衡|Ribbon，Nginx|
+|服务接口地调用(客户端调用服务的简化工具)|Feign|
+|消息队列|Kafka，RabbitMQ，ActiveMQ|
+|服务配置中心管理|SpringCloudConfig,Chef|
+|服务路由（API网关）|Zuul|
+|服务监控|Zabbix，Nagios，Metrics，Specatator|
+|全链路追踪|Zipkin，Brave，Dapper|
+|服务部署|Docker，OpenStack,Kubernetes|
+|数据流操作开发包|SpringCloud Stream(封装与Redis,Rabbit,Kafka等发送接受消息)|
+|事件消息总线|SpringCloud Bus|
