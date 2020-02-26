@@ -205,6 +205,37 @@ Executors.newFixedThreadPool(),自己写开多少个线程,常用于执行长期
 Executors.newSingleThreadExecutor只开启一个线程，常用于一个任务一个任务执行的场景<br>
 Executors.newCachedThreadPool(),系统自己决定开多少线程。常用于执行很多短期异步的小程序或者负载较轻的服务。
 
+### 线程池的七大参数：
+corePoolSize:线程池中的常驻核心线程数；<br>
+maximumPoolSize：线程池能同时执行的最大线程数，必须大于等于1；<br>
+keepAliveTime:多余的空闲线程存活时间（只有当线程池中的线程数大于corePool Size时，才会起作用）；<br>
+unit:keepAliveTime的单位<br>
+workQueue:任务队列，被提交但尚未被执行的任务；<br>
+threadFactory:表示生成线程池中工作线程的线程工厂，用于创建线程一般默认的即可；<br>
+handler；拒绝策略，当队列满了且工作线程大于等于最大线程数时如何来拒绝请求执行的Runable请求策略
+**拒绝策略**：AbortPolicy(默认)：直接抛出RejectedExecutionException异常阻止系统正常运行；<br>
+CallerRunsPolicy:"调用者运行"一种调节机制，该策略既不会抛弃任务，也不会抛出异常；而是将某些任务回退到调用者。（如果是main线程调用线程池，则线程池任务队列满了后，某些任务会由main线程处理。）<br>
+DiscardOldestPolicy:抛出队列中等待最久的任务，然后把当前任务加入队列中尝试再次提交，<br>
+DiscardPolicy:直接丢弃任务，不予任何处理也不抛出异常。(如果允许任务丢失，这是最好的策略)
+
+### 问题：在生产中，你用Executors的哪个方法创建线程池
+答：都不用。线程池通过ThreadPoolExecutor方式创建。
+Executors返回的线程池对象的弊端如下：
+FixedThreadPool和SingleThreadPool:允许的请求队列长度为Inter.MAX_VALUE,可能会堆积大量的请求，从而导致OOM。
+CachedThreadPool和ScheduleThreadPool:
+允许的创建线程数量为Inter.MAX_VALUE,可能会堆积大量的线程，从而导致OOM。
+
+### 合理配置线程池的线程数
+**CPU密集型**：该任务需要大量的运算，没有阻塞，CPU一直运行，CPU密集型任务配置尽可能少的线程数量，CPU核数+1个线程的线程池。<br>
+**IO密集型**：由于不是一直在执行任务，则应配置尽可能多的线程，如CPU核数*2；如果大部分线程都阻塞，故需要多配置线程数：CPU核数/1-阻塞系数，阻塞系数在0.8~0.9之间。<br>
+
+# 死锁
+指两个或两个以上的进程执行过程中，因争夺资源而造成的一种互相等待的现象。
+### 查找死锁
+终端输入jps -l，查看java进程的编号，再使用jstack 进程编号
+
+# CPU占用过高定位分析
+步骤：先用top命令找到CPU占比最高的；ps -ef 或者jps进一步定位，得知是一个怎么样的后台程序；定位到具体线程或代码（ps -mp 进程 -o THREAD,tid,time;参数解释：-m 显示所有的线程， -p pid进程使用CPU的时间， -o 该参数后是用户自定义格式）；将需要的线程ID转换为16进制格式（英文小写格式），然后printf"%x\n" 有问题的线程id;jstack 进程ID | grep tid(16进制线程ID小写英文)
 
 ### 微服务
 通常而言，微服务架构是一种架构模式，或者说一种架构风格。它**提倡将单一的应用程序划分成一组小的服务，彻底地去耦合**，每个服务运行在其独立的进程内，服务之间互相协调，互相配置.<br>
