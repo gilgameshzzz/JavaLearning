@@ -29,7 +29,7 @@
 ### 单例模式DCL代码
 ### 单例模式volatile分析
 
-**DCL(双端检锁)机制不一定线程安全，原始是有指令重排序的存在（某一个线程执行到第一次检测，读取到的instance不为bull时，instance的引用对象可能没有*完成初始化*。），加入volatile可以禁止指令重排**
+**DCL(双端检锁)机制不一定线程安全，原始是有指令重排序的存在（某一个线程执行到第一次检测，读取到的instance不为null时，instance的引用对象可能没有*完成初始化*。），加入volatile可以禁止指令重排**
 指令重排只会保证串行语义的执行的一致性（单线程），但并不会关系多线程间的语义一致性。**所以当一条线程访问instance不为null时，由于instance实例未必已初始化完成，也就造成了线程安全问题。**
 
 
@@ -130,7 +130,7 @@ public final int getAndAddInt(Object var1, long var2, int var4){
 # 问题五 CountDownLatch/CyclicBarrier/Semaphore使用过吗？
 
 **CountDownLatch**:让一些线程阻塞直到另一些线程完成一系列操作后才被唤醒；
-CountDownLatch主要有两个方法，当一个或多个线程调用await方法时，调用线程会被阻塞。其他线程调用countDown方法会将计数器减1（调用counDown方法的线程不会阻塞），当计数器值为0时，因调用await方法被阻塞的线程就会被唤醒，继续执行。
+CountDownLatch主要有两个方法，当一个或多个线程调用await方法时，调用线程会被阻塞。其他线程调用countDown方法会将计数器减1（调用countDown方法的线程不会阻塞），当计数器值为0时，因调用await方法被阻塞的线程就会被唤醒，继续执行。
 
 **CyclicBarrier**:字面意思是可循环（Cylic）使用的屏障（Barrier）。它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活，线程进入屏障通过CyclicBarrier的await()方法。（与CountDownLatch相反）
 
@@ -199,6 +199,14 @@ java中的线程池是通过Executor框架实现的，该框架中用到了Execu
 
 ## java 使用多线程的方式:
 ①继承线程类，②使用Runable接口(没有返回值，不抛异常)，③使用Callable接口(有返回值，会抛异常)，④使用线程池<br>
+<br>1.Callable规定的方法是call()，而Runnable规定的方法是run().
+<br>2.Callable的任务执行后可返回值，而Runnable的任务是不能返回值的。  
+<br>3.call() 方法可抛出异常，而run() 方法是不能抛出异常的。 
+<br>4.运行Callable任务可拿到一个Future对象， Future表示异步计算的结果。 
+它提供了检查计算是否完成的方法，以等待计算的完成，并检索计算的结果。 
+<br>5.通过Future对象可了解任务执行情况，可取消任务的执行，还可获取任务执行的结果。
+<br>6.Callable是类似于Runnable的接口，实现Callable接口的类和实现Runnable的类都是可被其它线程执行的任务。  
+
 
 ### Executors重点方法：
 Executors.newFixedThreadPool(),自己写开多少个线程,常用于执行长期的任务，性能好很多<br>
@@ -213,7 +221,7 @@ unit:keepAliveTime的单位<br>
 workQueue:任务队列，被提交但尚未被执行的任务；<br>
 threadFactory:表示生成线程池中工作线程的线程工厂，用于创建线程一般默认的即可；<br>
 handler；拒绝策略，当队列满了且工作线程大于等于最大线程数时如何来拒绝请求执行的Runable请求策略
-**拒绝策略**：AbortPolicy(默认)：直接抛出RejectedExecutionException异常阻止系统正常运行；<br>
+<br>**拒绝策略**：AbortPolicy(默认)：直接抛出RejectedExecutionException异常阻止系统正常运行；<br>
 CallerRunsPolicy:"调用者运行"一种调节机制，该策略既不会抛弃任务，也不会抛出异常；而是将某些任务回退到调用者。（如果是main线程调用线程池，则线程池任务队列满了后，某些任务会由main线程处理。）<br>
 DiscardOldestPolicy:抛出队列中等待最久的任务，然后把当前任务加入队列中尝试再次提交，<br>
 DiscardPolicy:直接丢弃任务，不予任何处理也不抛出异常。(如果允许任务丢失，这是最好的策略)
@@ -235,7 +243,7 @@ CachedThreadPool和ScheduleThreadPool:
 终端输入jps -l，查看java进程的编号，再使用jstack 进程编号
 
 # CPU占用过高定位分析
-步骤：先用top命令找到CPU占比最高的；ps -ef 或者jps进一步定位，得知是一个怎么样的后台程序；定位到具体线程或代码（ps -mp 进程 -o THREAD,tid,time;参数解释：-m 显示所有的线程， -p pid进程使用CPU的时间， -o 该参数后是用户自定义格式）；将需要的线程ID转换为16进制格式（英文小写格式），然后printf"%x\n" 有问题的线程id;jstack 进程ID | grep tid(16进制线程ID小写英文)
+步骤：先用top命令找到CPU占比最高的；ps -ef 或者jps进一步定位，得知是一个怎么样的后台程序；定位到具体线程或代码（ps -mp 进程 -o THREAD,tid,time;参数解释：-m 显示所有的线程， -p pid进程使用CPU的时间， -o 该参数后是用户自定义格式）；将需要的线程ID转换为16进制格式（英文小写格式），~~然后printf"%x\n" 有问题的线程id~~;jstack 进程ID | grep tid(16进制线程ID小写英文)
 
 ### 微服务
 通常而言，微服务架构是一种架构模式，或者说一种架构风格。它**提倡将单一的应用程序划分成一组小的服务，彻底地去耦合**，每个服务运行在其独立的进程内，服务之间互相协调，互相配置.<br>
